@@ -2,9 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import { Card, CardBody, Text, Heading } from '@pancakeswap/uikit'
 // import { useTotalValue } from 'state/farms/hooks'
-// import { fetchPoolsTotalStaking } from 'state/pools/fetchPools'
-import { fetchPoolsPublicDataAsync } from 'state/pools/index'
-import { simpleRpcProvider } from 'utils/providers'
+import { fetchPoolsTotalStaking } from 'state/pools/fetchPools'
+import { useFetchPublicPoolsData } from 'state/pools/hooks'
 // import { useGetStats } from 'hooks/api'
 import { useTranslation } from 'contexts/Localization'
 import CardValue from './CardValue'
@@ -15,13 +14,17 @@ const StyledTotalValueLockedCard = styled(Card)`
   flex: 1;
 `
 
-const TotalValueLockedCard = async () => {
+const TotalValueLockedCard = () => {
   const { t } = useTranslation()
-  const blockNumber = await simpleRpcProvider.getBlockNumber()
   // const tvl = useTotalValue()
   // const tvl = fetchPoolsTotalStaking()
-  const tvl = fetchPoolsPublicDataAsync(blockNumber)
+   const tvl = useFetchPublicPoolsData()
   console.log({ tvl })
+  // let value = 0;
+  // for (let i = 0; i < tvl.length; i++) {
+  //   value += tvl[i].totalStaked
+  // }
+  // let tvl = "1"
   // const tvl = data ? data.total_value_locked_all.toLocaleString('en-US', { maximumFractionDigits: 0 }) : null
 
   return (
@@ -31,7 +34,7 @@ const TotalValueLockedCard = async () => {
             {t('Total Value Locked (TVL)')}
         </Heading>
         <>
-          <CardValue value={tvl.toNumber()} prefix="$" decimals={2}/>
+          <CardValue value={123} prefix="$" decimals={2}/>
           <Text color="text" mt="40px">{t('Across all Farms and Pools')}</Text>
         </>
       </CardBody>

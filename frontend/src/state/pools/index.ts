@@ -44,6 +44,7 @@ const initialState: PoolsState = {
 
 // Thunks
 export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispatch, getState) => {
+  console.log("HERE")
   const blockLimits = await fetchPoolsBlockLimits()
   const totalStakings = await fetchPoolsTotalStaking()
   const prices = getTokenPricesFromFarm(getState().farms.data)
@@ -51,7 +52,6 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispat
   const liveData = poolsConfig.map((pool) => {
     const blockLimit = blockLimits.find((entry) => entry.sousId === pool.sousId)
     const totalStaking = totalStakings.find((entry) => entry.sousId === pool.sousId)
-    console.log('debug->totalStaking', totalStaking)
     const isPoolEndBlockExceeded = currentBlock > 0 && blockLimit ? currentBlock > Number(blockLimit.endBlock) : false
     const isPoolFinished = pool.isFinished || isPoolEndBlockExceeded
 
@@ -69,6 +69,15 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispat
         )
       : 0
 
+    console.log('debug->totalStaking', {
+      ...blockLimit,
+      ...totalStaking,
+      stakingTokenPrice,
+      earningTokenPrice,
+      apr,
+      isFinished: isPoolFinished,
+    })
+
     return {
       ...blockLimit,
       ...totalStaking,
@@ -78,7 +87,6 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispat
       isFinished: isPoolFinished,
     }
   })
-
   dispatch(setPoolsPublicData(liveData))
 }
 
