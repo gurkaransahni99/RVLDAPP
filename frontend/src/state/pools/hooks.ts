@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@web3-react/core'
 import { useSelector } from 'react-redux'
@@ -31,6 +31,30 @@ export const useFetchPublicPoolsData = () => {
   }, [dispatch, slowRefresh])
 }
 
+export const useTotalSupply = (pools) => {
+  const { slowRefresh } = useRefresh()
+  const [totalSupply, setTotalSupply] = useState<BigNumber>()
+
+  useEffect(() => {
+    async function fetchTotalSupply() {
+      console.log(pools)
+
+      let val = 0;
+      for (let i = 0; i < pools.length; i++) {
+        if (pools[i] !== undefined && pools[i].stakingTokenPrice !== undefined){
+          val += pools[i].stakingTokenPrice * Number(pools[i].totalStaked) / (10 ** pools[i].stakingToken.decimals)
+          // val+=10
+        }
+      }
+      console.log({val})
+      setTotalSupply(new BigNumber(val.toString()))
+    }
+
+    fetchTotalSupply()
+  }, [pools, slowRefresh])
+
+  return totalSupply
+}
 export const usePools = (account): { pools: Pool[]; userDataLoaded: boolean } => {
   const { fastRefresh } = useRefresh()
   const dispatch = useAppDispatch()
